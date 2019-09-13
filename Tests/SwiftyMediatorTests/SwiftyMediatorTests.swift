@@ -1,5 +1,5 @@
 import XCTest
-@testable import SwiftyMediator
+@testable import CHSwiftyMediator
 
 struct NameRequestor: Requestor {
     typealias Target = String
