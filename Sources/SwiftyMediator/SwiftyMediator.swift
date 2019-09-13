@@ -5,41 +5,16 @@
 //  Created by 王传辉 on 2019/9/6.
 //
 
-public protocol MediatorType {
-    
-    func request<R: Requestor>(_ requestor: R) throws -> R.Target
-    
-}
-
-public extension MediatorType {
-    func request<R: Requestor>(_ requestor: R) throws -> R.Target {
-        return try internalRequest(requestor)
+public enum Mediator {
+    public static func `throws`<R: Requestor>(_ requestor: R) throws -> R.Target {
+        return try ThrowsMediator.request(requestor)
     }
-}
-
-extension MediatorType {
-    func internalRequest<R: Requestor>(_ requestor: R) throws -> R.Target {
-        guard let internalProvider = requestor as? InternalProvider else {
-            throw NotProviderError(requestor)
-        }
-        let any = internalProvider.providAny()
-        guard let object = any as? R.Target else {
-            throw NotSpecifiedTargetError(requestor, any: any)
-        }
-        return object
+    public static func fatal<R: Requestor>(_ requestor: R) -> R.Target {
+        return FatalMediator.request(requestor)
     }
-}
-
-public enum Mediator: MediatorType {
-    
-    public static func request<R: Requestor>(_ requestor: R) throws -> R.Target {
-        return try StructMediator().request(requestor)
+    public static func defaultProvider<R: Requestor, P: Provider>(_ requestor: R, _ provider: P) -> R.Target where R.Target == P.Target {
+        return DefaultProviderMediator(provider).request(requestor)
     }
-    
-    private struct StructMediator: MediatorType {
-        
-    }
-    
 }
 
 

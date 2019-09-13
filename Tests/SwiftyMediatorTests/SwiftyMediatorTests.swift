@@ -34,7 +34,7 @@ final class SwiftyMediatorTests: XCTestCase {
     func testMediator() {
         let requestor = NameRequestor(id: 1)
         do {
-            let name = try Mediator.request(requestor)
+            let name = try Mediator.throws(requestor)
             print(name)
         } catch {
             print(error)
@@ -43,14 +43,21 @@ final class SwiftyMediatorTests: XCTestCase {
     
     func testDefaultMediator() {
         let requestor = Name2Requestor(id: 1)
-        let mediator = DefaultProviderMediator(DefaultStringProvider())
-        let name = mediator.request(requestor)
+        let provider = DefaultStringProvider()
+        let name = Mediator.defaultProvider(requestor, provider)
+        print(name)
+    }
+    
+    func testFatalErrorMediator() {
+        let requestor = NameRequestor(id: 1)
+        let name = Mediator.fatal(requestor)
         print(name)
     }
 
     static var allTests = [
         ("testExample", testExample),
         ("testMediator", testMediator),
-        ("testDefaultMediator", testDefaultMediator)
+        ("testDefaultMediator", testDefaultMediator),
+        ("testFatalErrorMediator", testFatalErrorMediator)
     ]
 }
